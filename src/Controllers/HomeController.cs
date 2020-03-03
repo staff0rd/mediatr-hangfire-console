@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using mediatr_hangfire_console.Models;
+using Hangfire;
+using Hangfire.Server;
+using Hangfire.Console;
 
 namespace mediatr_hangfire_console.Controllers
 {
@@ -23,9 +26,17 @@ namespace mediatr_hangfire_console.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        [HttpPost]
+        [Route("queue-job")]
+        public IActionResult QueueJob()
         {
-            return View();
+            BackgroundJob.Enqueue(() => TheJob(null));
+            return RedirectToAction("Index");
+        }
+
+        public void TheJob(PerformContext context)
+        {
+            context.WriteLine("A console message!");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
