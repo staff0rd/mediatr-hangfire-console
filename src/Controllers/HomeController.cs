@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using mediatr_hangfire_console.Models;
 using Hangfire;
 using Hangfire.Server;
 using Hangfire.Console;
+using MediatR;
+using mediatr_hangfire_console.Commands;
 
 namespace mediatr_hangfire_console.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IMediator _mediator;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IMediator mediator)
         {
-            _logger = logger;
+            _mediator = mediator;
         }
 
         public IActionResult Index()
@@ -34,6 +31,13 @@ namespace mediatr_hangfire_console.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [Route("queue-command")]
+        public IActionResult QueueCommand() 
+        {
+            _mediator.Enqueue(new PerformContextCommand());
+            return RedirectToAction("Index");
+        }
         public void TheJob(PerformContext context)
         {
             context.WriteLine("A console message!");

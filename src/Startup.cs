@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Hangfire;
 using Hangfire.Console;
+using MediatR;
 
 namespace mediatr_hangfire_console
 {
@@ -24,13 +25,16 @@ namespace mediatr_hangfire_console
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHangfire(config => 
+            services.AddHangfire((provider, config) => 
             {
                 config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"));
                 config.UseConsole();
+                config.UseMediatR(provider.GetRequiredService<IMediator>());
             });
 
             services.AddHangfireServer();
+
+            services.AddMediatR(GetType());
 
             services.AddControllersWithViews();
         }
