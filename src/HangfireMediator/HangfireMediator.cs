@@ -1,5 +1,7 @@
 using Hangfire;
+using Hangfire.Server;
 using MediatR;
+using mediatr_hangfire_console.Controllers;
 
 // https://codeopinion.com/background-commands-mediatr-hangfire/
 namespace mediatr_hangfire_console
@@ -12,11 +14,12 @@ namespace mediatr_hangfire_console
         }
     }
 
+    [LogToHangfireConsole]
     public class HangfireMediator
     {
         private readonly IMediator _mediator;
 
-        public HangfireMediator(IMediator mediator)
+        public HangfireMediator(IMediator mediator, PerformContext context)
         {
             _mediator = mediator;
         }

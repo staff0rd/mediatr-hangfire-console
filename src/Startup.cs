@@ -11,6 +11,9 @@ using Microsoft.Extensions.Hosting;
 using Hangfire;
 using Hangfire.Console;
 using MediatR;
+using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+using mediatr_hangfire_console.Controllers;
 
 namespace mediatr_hangfire_console
 {
@@ -29,8 +32,10 @@ namespace mediatr_hangfire_console
             {
                 config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"));
                 config.UseConsole();
-                config.UseMediatR(provider.GetRequiredService<IMediator>());
+                config.UseSerializerSettings(new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects });
             });
+
+            services.AddSingleton<JobActivator, InjectContextJobActivator>();
 
             services.AddHangfireServer();
 
@@ -39,8 +44,10 @@ namespace mediatr_hangfire_console
             services.AddControllersWithViews();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
         {
+            factory.AddProvider(new HangfireConsoleLoggerProvider());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

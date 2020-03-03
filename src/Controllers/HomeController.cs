@@ -6,9 +6,14 @@ using Hangfire.Server;
 using Hangfire.Console;
 using MediatR;
 using mediatr_hangfire_console.Commands;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using System;
+using Hangfire.Common;
 
 namespace mediatr_hangfire_console.Controllers
 {
+    
     public class HomeController : Controller
     {
         private readonly IMediator _mediator;
@@ -20,27 +25,8 @@ namespace mediatr_hangfire_console.Controllers
 
         public IActionResult Index()
         {
+            _mediator.Enqueue(new LoggingCommand { Message = "Log this to console plz!"});
             return View();
-        }
-
-        [HttpPost]
-        [Route("queue-job")]
-        public IActionResult QueueJob()
-        {
-            BackgroundJob.Enqueue(() => TheJob(null));
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        [Route("queue-command")]
-        public IActionResult QueueCommand() 
-        {
-            _mediator.Enqueue(new PerformContextCommand());
-            return RedirectToAction("Index");
-        }
-        public void TheJob(PerformContext context)
-        {
-            context.WriteLine("A console message!");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
