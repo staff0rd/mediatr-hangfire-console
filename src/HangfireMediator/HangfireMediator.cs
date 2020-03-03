@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
 using MediatR;
@@ -19,14 +20,14 @@ namespace mediatr_hangfire_console
     {
         private readonly IMediator _mediator;
 
-        public HangfireMediator(IMediator mediator, PerformContext context)
+        public HangfireMediator(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        public void SendCommand(IRequest request)
+        public async Task SendCommand(IRequest request)
         {
-            _mediator.Send(request);
+            await _mediator.Send(request);
         }
     }
 }

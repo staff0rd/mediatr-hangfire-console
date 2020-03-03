@@ -16,10 +16,17 @@ namespace mediatr_hangfire_console.Commands
             _logger = logger;
         }
 
-        public Task<Unit> Handle(LoggingCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(LoggingCommand request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation(request.Message);
-            return Task.FromResult(new Unit());
+            var seconds = 10;
+            do 
+            {
+                _logger.LogInformation(request.Message);
+                await Task.Delay(2000);
+                seconds--;
+            } while (seconds > 0);
+            _logger.LogError("Finished!");
+            return Unit.Value;
         }
     }
 }
